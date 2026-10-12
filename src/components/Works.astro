@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectArt from './ProjectArt.astro';
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section id="works" class="works" aria-labelledby="works-title">
+  {works.map((w, i) => (
+    <article id={`project-${w.id}`} class="work snap-panel" data-work={w.id} data-accent={w.data.theme.accent} style={`--accent:${w.data.theme.accent}`} aria-labelledby={`work-${w.id}`}>
+      <span class="work__ghost" aria-hidden="true">{pad(i + 1)}</span>
+      <div class="wrap work__inner">
+        <div class="work__top">
+          {i === 0 ? <h2 id="works-title">Selected Works</h2> : <p class="work__section">Selected Works</p>}
+          <span class="mono">{pad(i + 1)} / {pad(works.length)}</span>
+        </div>
+        <div class="work__grid">
+          <div class="work__meta" data-stagger>
+            <p class="label">{w.data.kind}</p>
+            <h3 id={`work-${w.id}`} style={`view-transition-name:title-${w.id}`}>{w.data.title}<span aria-hidden="true">.</span></h3>
+            <p class="work__summary">{w.data.summary}</p>
+            <ul class="work__features">{w.data.features.slice(0, 3).map(f => <li>{f}</li>)}</ul>
+            <div class="work__links">
+              <a class="btn work__open" href={w.data.url} target="_blank" rel="noopener" data-magnet>프로젝트 열기 <span aria-hidden="true">↗</span><span class="sr-only"> (새 탭)</span></a>
+              <a class="work__more" href={`/works/${w.id}/`}>프로젝트 소개 <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+          <div class="work__media"><ProjectArt effect={w.data.effect} name={`art-${w.id}`} /></div>
+        </div>
+        <div class="work__bottom mono"><span>{new URL(w.data.url).hostname}</span><a href={i < works.length - 1 ? `#project-${works[i + 1].id}` : '#main'}>{i < works.length - 1 ? 'NEXT PROJECT ↓' : 'BACK TO TOP ↑'}</a></div>
+      </div>
+    </article>
+  ))}
+</section>
+
+<style>
+  .work { position: relative; overflow: clip; box-shadow: inset 0 1px var(--line); background: radial-gradient(ellipse 60% 55% at 78% 52%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%), var(--ink); }
+  .work__ghost { position: absolute; right: -.06em; bottom: -.18em; font-family: var(--f-display); font-size: clamp(14rem, 34vw, 32rem); font-weight: 600; line-height: 1; letter-spacing: -.08em; color: transparent; -webkit-text-stroke: 1px color-mix(in srgb, var(--accent) 22%, transparent); pointer-events: none; user-select: none; }
+  .work__inner { position: relative; min-height: calc(100svh - var(--header-h) - var(--footer-h)); display: flex; flex-direction: column; padding-block: 32px; }
+  .work__top, .work__bottom { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  .work__top h2, .work__section { font-family: var(--f-display); font-size: clamp(1.25rem, 2vw, 1.7rem); font-weight: 500; letter-spacing: -.04em; }
+  .work__top .mono { color: var(--dim); font-size: .65rem; }
+  .work__grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(32px, 7vw, 100px); align-items: center; flex: 1; padding-block: 36px; }
+  .work__meta .label { font-size: .65rem; letter-spacing: .12em; }
+  h3 { font-size: clamp(2.5rem, 5.2vw, 5rem); font-weight: 500; letter-spacing: -.065em; margin-top: 20px; }
+  h3 span { color: var(--accent); }
+  .work__summary { margin-top: 24px; max-width: 27em; color: var(--dim); font-size: 1rem; line-height: 1.85; }
+  .work__features { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .work__features li { color: var(--dim); font-size: .75rem; }
+  .work__features li::before { content: '/'; margin-right: 8px; color: var(--accent); }
+  .work__links { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 32px; font-size: .85rem; }
+  .work__open { border-radius: 4px; background: var(--paper); color: var(--ink); padding-inline: 18px; gap: 20px; min-height: 48px; transition: translate .4s var(--spring), background-color .2s; }
+  .work__open:hover { background: var(--accent); border-color: var(--accent); }
+  .work__more { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; text-decoration: none; }
+  .work__more span { transition: translate .3s var(--spring); }
+  .work__more:hover { color: var(--accent); }
+  .work__more:hover span { translate: 6px 0; }
+  .work__media { min-width: 0; width: 100%; max-width: min(590px, 65svh); justify-self: end; }
+  .work__bottom { padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: .6rem; }
+  .work__bottom a { min-height: 32px; display: inline-flex; align-items: center; text-decoration: none; }
+
+  /* Scroll-linked: the artwork swings in as the panel arrives and lifts away as it leaves; the number drifts behind. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .work { view-timeline: --panel block; view-timeline-inset: var(--header-h) var(--footer-h); }
+      .work__media { animation: media-in linear both, media-out linear forwards; animation-timeline: --panel, --panel; animation-range: entry 0% contain 0%, exit 0% exit 100%; }
+      .work__ghost { animation: ghost-drift linear both; animation-timeline: --panel; animation-range: cover; }
+    }
+  }
+  @keyframes media-in { from { opacity: .15; transform: translateY(30%) scale(.8) rotate(-6deg); } to { opacity: 1; transform: none; } }
+  @keyframes media-out { from { opacity: 1; transform: none; } to { opacity: .2; transform: translateY(-20%) scale(.88) rotate(4deg); } }
+  @keyframes ghost-drift { from { translate: 0 40%; } to { translate: 0 -40%; } }
+
+  @media (max-width: 760px) {
+    .work__inner { padding-block: 24px; }
+    .work__grid { grid-template-columns: 1fr; gap: 28px; padding-block: 28px; }
+    h3 { margin-top: 12px; font-size: clamp(2.5rem, 10vw, 4rem); }
+    .work__summary { margin-top: 16px; font-size: .9rem; }
+    .work__features { margin-top: 16px; gap: 4px 12px; }
+    .work__features li { font-size: .65rem; }
+    .work__links { margin-top: 20px; gap: 20px; font-size: .8rem; }
+    .work__media { max-width: 100%; }
+    .work__bottom { font-size: .5rem; }
+    .work__ghost { top: 30%; bottom: auto; }
+  }
+</style>

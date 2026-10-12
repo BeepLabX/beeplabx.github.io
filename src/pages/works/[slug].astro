@@ -1,0 +1,273 @@
+---
+import { getCollection, render } from 'astro:content';
+import ProjectArt from '../../components/ProjectArt.astro';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+  return works.map((work, i) => ({
+    params: { slug: work.id },
+    props: { work, next: works[(i + 1) % works.length] },
+  }));
+}
+
+const { work, next } = Astro.props;
+const { Content, headings } = await render(work);
+const chapters = headings.filter((h) => h.depth === 2);
+const d = work.data;
+const t = d.theme;
+---
+
+<Base title={d.title} description={d.summary}>
+  <article
+    class:list={['detail', `detail--${t.mode}`]}
+    style={`--w-bg:${t.bg};--w-fg:${t.fg};--w-muted:${t.muted};--w-accent:${t.accent}`}
+  >
+    <header class="wrap detail__head">
+      <a class="detail__back" href="/#works">← 프로젝트 목록</a>
+      <p class="label">{d.kind}{d.status && ` · ${d.status}`}</p>
+      <h1 style={`view-transition-name:title-${work.id}`}>{d.title}</h1>
+      {d.titleKo && <p class="detail__ko">{d.titleKo}</p>}
+      <p class="detail__summary">{d.summary}</p>
+      <p class="detail__links">
+        <a class="btn detail__open" href={d.url} target="_blank" rel="noopener">
+          {d.title} 열기 <span class="arrow" aria-hidden="true">↗</span><span class="sr-only">(새 탭)</span>
+        </a>
+      </p>
+    </header>
+
+    <!-- Scroll story: each chapter of the write-up changes the pinned artwork (see ProjectArt's data-step styles). -->
+    <div class="wrap story" data-story data-step="0">
+      <div class="detail__media">
+        <ProjectArt effect={d.effect} name={`art-${work.id}`} />
+        <ol class="story__steps mono" aria-hidden="true">
+          {chapters.map((c, i) => <li data-story-step={i}><span>{String(i + 1).padStart(2, '0')}</span>{c.text}</li>)}
+        </ol>
+        <p class="detail__caption">프로젝트 아트워크 · 현재 버전은 프로젝트 링크에서 확인할 수 있습니다.</p>
+      </div>
+      <div class="story__text">
+        <aside>
+          <h2 class="label">주요 기능</h2>
+          <ul>{d.features.map((f) => <li>{f}</li>)}</ul>
+        </aside>
+        <div class="prose"><Content /></div>
+        <p class="story__cta">
+          <a class="btn detail__open" href={d.url} target="_blank" rel="noopener">
+            지금 {d.title} 열기 <span class="arrow" aria-hidden="true">↗</span><span class="sr-only">(새 탭)</span>
+          </a>
+        </p>
+      </div>
+    </div>
+  </article>
+
+  {
+    next.id !== work.id && (
+      <nav class="wrap detail__next" aria-label="다음 작업">
+        <a href={`/works/${next.id}/`}>
+          <span class="label">다음 작업</span>
+          <span class="detail__next-title">{next.data.title} →</span>
+        </a>
+      </nav>
+    )
+  }
+</Base>
+
+<style>
+  .detail {
+    background: var(--w-bg);
+    color: var(--w-fg);
+    padding: calc(var(--header-h) + 48px) 0 clamp(56px, 8vw, 100px);
+  }
+
+  .detail__back {
+    display: inline-block;
+    margin-bottom: 2rem;
+    color: var(--w-muted);
+    text-decoration: none;
+    padding: 8px 0;
+  }
+
+  .detail .label {
+    color: var(--w-muted);
+  }
+
+  .detail h1 {
+    margin-top: 0.6rem;
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    letter-spacing: -0.045em;
+  }
+
+  .detail__ko {
+    margin-top: 0.5rem;
+    color: var(--w-muted);
+  }
+
+  .detail__summary {
+    max-width: 36em;
+    margin-top: 1.4rem;
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  }
+
+  .detail__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 1.8rem;
+  }
+
+  .detail__open {
+    background: var(--w-accent);
+    border-color: var(--w-accent);
+    color: var(--w-bg);
+  }
+
+  .detail--dark .detail__open {
+    color: #1a1206;
+  }
+
+  .detail__url {
+    color: var(--w-muted);
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(32px, 6vw, 88px);
+    margin-top: clamp(40px, 6vw, 72px);
+  }
+
+  .detail__media {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+    align-self: start;
+  }
+
+  .story__steps {
+    display: flex;
+    gap: 18px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.7rem;
+    color: var(--w-muted);
+  }
+
+  .story__steps li {
+    display: flex;
+    gap: 8px;
+    opacity: 0.45;
+    transition: opacity 0.4s, color 0.4s;
+  }
+
+  .story__steps li span {
+    color: var(--w-accent);
+  }
+
+  .story__steps li:global(.is-current) {
+    opacity: 1;
+    color: var(--w-fg);
+  }
+
+  .detail__caption {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    color: var(--w-muted);
+  }
+
+  .story__text aside ul {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid rgb(127 127 127 / 0.25);
+  }
+
+  .story__text aside li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgb(127 127 127 / 0.25);
+    font-size: 0.95rem;
+  }
+
+  .story .prose {
+    margin-top: clamp(40px, 8vh, 80px);
+  }
+
+  .story__cta {
+    margin: 32px 0 26vh;
+  }
+
+  /* Each chapter gets room to be "the one in view"; the others dim. */
+  .detail .prose :global(h2) {
+    margin-top: 0;
+    padding-top: 0.2rem;
+  }
+
+  .detail .prose :global(h2 ~ h2) {
+    margin-top: 42vh;
+  }
+
+  .story .prose > :global(*) {
+    transition: opacity 0.5s;
+  }
+
+  .story .prose > :global(:not(.is-current)) {
+    opacity: 0.3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story .prose > :global(:not(.is-current)) {
+      opacity: 1;
+    }
+  }
+
+  .detail__next a {
+    display: grid;
+    gap: 6px;
+    padding: clamp(40px, 6vw, 72px) 0 0;
+    text-decoration: none;
+  }
+
+  .detail__next-title {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: -0.03em;
+  }
+
+  .detail__next a:hover .detail__next-title {
+    color: var(--lamp);
+  }
+
+  /* Phones: the artwork pins under the header and the chapters scroll beneath it. */
+  @media (max-width: 760px) {
+    .story {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .detail__media {
+      top: var(--header-h);
+      z-index: 2;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 12px var(--gutter) 10px;
+      background: linear-gradient(var(--w-bg) 88%, transparent);
+    }
+
+    .story__steps {
+      gap: 12px;
+      font-size: 0.6rem;
+    }
+
+    .detail__caption {
+      display: none;
+    }
+
+    .story__text aside {
+      margin-top: 24px;
+    }
+
+    .detail .prose :global(h2 ~ h2) {
+      margin-top: 30vh;
+    }
+  }
+</style>

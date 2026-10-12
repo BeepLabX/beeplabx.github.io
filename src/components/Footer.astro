@@ -1,0 +1,66 @@
+---
+import { profile } from '../config/profile';
+---
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span class="footer__copyright mono">© {new Date().getFullYear()} {profile.brand}</span>
+    <div class="footer__end">
+      <button class="walk-toggle" type="button" data-companion-toggle aria-pressed="false" aria-label="토틸루 산책 멈추기">
+        <span class="walk-toggle__dot" aria-hidden="true"></span><span data-companion-label>산책 중</span>
+      </button>
+      <a href={profile.repoUrl} target="_blank" rel="noopener">소스 코드 ↗<span class="sr-only"> (새 탭)</span></a>
+      <a href="#main">맨 위로 ↑</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Totillu from the Totillu app, walking around the page. Tap or click to squish, drag to move. -->
+<div class="companion" data-companion data-state="walking">
+  <button class="companion__friend" type="button" data-squish aria-label="산책 중인 토틸루 누르기">
+    <img src="/totillu.svg" width="390" height="335" alt="" draggable="false" />
+    <span class="companion__hello" aria-hidden="true" data-companion-say>안녕!</span>
+  </button>
+  <svg class="companion__lantern" viewBox="0 0 24 40" aria-hidden="true">
+    <path d="M12 1v6" stroke="#caa77a" stroke-width="2" />
+    <path d="M6 9h12l-2 4H8z" fill="#b09574" />
+    <path d="m7 13 1.5 18h7L17 13z" fill="#ffce8b" fill-opacity=".85" stroke="#c4a47d" stroke-width="1.5" />
+    <path d="M7 31h10v3H7z" fill="#b09574" />
+  </svg>
+</div>
+
+<script>
+  import { initCompanion } from '../scripts/companion';
+  initCompanion();
+</script>
+
+<style>
+  .footer { view-transition-name: footer; position: fixed; inset: auto 0 0; z-index: 20; height: var(--footer-h); padding-bottom: env(safe-area-inset-bottom); background: rgb(9 12 18 / .88); backdrop-filter: blur(20px); border-top: 1px solid var(--line); }
+  .footer__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .footer__copyright { color: var(--dim); font-size: .7rem; white-space: nowrap; }
+  .footer__end { display: flex; align-items: center; gap: clamp(12px, 3vw, 28px); font-size: .78rem; color: var(--dim); }
+  .footer__end a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; white-space: nowrap; transition: color .2s; }
+  .footer__end a:hover { color: var(--paper); }
+  .walk-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 12px; border: 1px solid rgb(246 155 187 / .3); border-radius: 999px; background: none; color: #e5bdcf; font-size: .72rem; cursor: pointer; white-space: nowrap; transition: border-color .2s, background-color .2s; }
+  .walk-toggle:hover { border-color: var(--jelly); background: rgb(246 155 187 / .08); }
+  .walk-toggle__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--jelly); animation: blink 1.6s ease-in-out infinite; }
+  .walk-toggle[aria-pressed='true'] .walk-toggle__dot { opacity: .35; animation: none; }
+
+  .companion { view-transition-name: companion; position: fixed; left: 0; top: 0; z-index: 18; width: 84px; height: 72px; pointer-events: none; will-change: transform; }
+  .companion__friend { position: relative; width: 100%; height: 100%; border: 0; padding: 0; background: none; border-radius: 40%; cursor: grab; transform-origin: 50% 90%; transition: transform .6s var(--spring); pointer-events: auto; touch-action: none; -webkit-tap-highlight-color: transparent; }
+  .companion__friend img { width: 100%; pointer-events: none; user-select: none; scale: var(--face, 1) 1; filter: drop-shadow(0 6px 8px rgb(0 0 0 / .35)); transition: scale .3s; }
+  .companion__friend:global(.is-pressed) { transform: scale(1.18, .72); transition-duration: .15s; }
+  .companion:global(.is-dragging) .companion__friend { cursor: grabbing; transform: scale(.92, 1.12) rotate(-6deg); }
+  .companion__hello { position: absolute; left: 50%; top: -30px; translate: -50% 0; padding: 3px 12px; border: 1px solid #ebcad9; border-radius: 20px; background: #fff4f9; color: #8b4968; font-size: .7rem; white-space: nowrap; opacity: 0; transition: opacity .2s; }
+  .companion__friend:hover .companion__hello, .companion__friend:focus-visible .companion__hello, .companion__friend:global(.is-pressed) .companion__hello, .companion__friend:global(.is-startled) .companion__hello { opacity: 1; }
+  /* In Lamplighter's panel Totillu carries a little lantern. */
+  .companion__lantern { position: absolute; right: -10px; top: 18%; width: 22%; opacity: 0; scale: .4; transform-origin: 50% 0; transition: opacity .4s, scale .5s var(--spring); filter: drop-shadow(0 0 10px #ffa94d); pointer-events: none; }
+  .companion[data-mood='lamp'] .companion__lantern { opacity: 1; scale: 1; animation: lantern-swing 1.4s ease-in-out infinite; }
+  @keyframes lantern-swing { 50% { rotate: 8deg; } }
+  @keyframes blink { 50% { opacity: .35; } }
+
+  @media (max-width: 600px) {
+    .footer__end a[target] { display: none; }
+    .companion { width: 64px; height: 55px; }
+  }
+</style>

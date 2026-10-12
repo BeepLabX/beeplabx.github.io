@@ -1,0 +1,126 @@
+---
+// `name` pairs this artwork with the same project's artwork on the next page (view transition).
+interface Props { effect: 'squish' | 'lamp' | 'none'; name?: string; }
+const { effect, name } = Astro.props;
+---
+
+<figure class:list={['project-art', `project-art--${effect}`]} data-tilt style={name && `view-transition-name:${name}`} aria-label={effect === 'squish' ? 'Totillu 캐릭터 아트워크' : effect === 'lamp' ? 'Lamplighter 등불 아트워크' : '프로젝트 아트워크'}>
+  {effect === 'squish' ? (
+    <>
+      <span class="art__word" aria-hidden="true">totillu</span>
+      <div class="art__character">
+        <button class="art__touch" type="button" data-squish aria-label="Totillu 캐릭터 눌러 보기">
+          <img src="/totillu.svg" width="390" height="335" alt="분홍색 Totillu 캐릭터" loading="lazy" />
+        </button>
+      </div>
+      <div class="art__hearts" aria-hidden="true"><i>♥</i><i>♥</i><i>♥</i><i>♥</i><i>♥</i></div>
+      <figcaption><span>CHARACTER CREATOR</span><span>눌러 보기 ↗</span></figcaption>
+    </>
+  ) : effect === 'lamp' ? (
+    <>
+      <!-- The Lamplighter title screen in three layers (street, lamplighter, logo) that drift apart with the pointer. -->
+      <img class="art__street" src="/lamplighter/title-bg.webp" width="1120" height="630" alt="" loading="lazy" decoding="async" />
+      <div class="art__light" aria-hidden="true"></div>
+      <div class="art__keeper" aria-hidden="true">
+        <img src="/lamplighter/title-figure.webp" width="465" height="760" alt="" loading="lazy" decoding="async" />
+        <span class="art__flame"></span>
+        <div class="art__embers"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="art__lamps" aria-hidden="true">
+        {[2, 7, 3, 8].map((cell, i) => <i style={`--cell:${cell};--x:${53 + i * 13}%;--i:${i}`}></i>)}
+      </div>
+      <img class="art__logo" src="/lamplighter/title-logo.webp" width="640" height="266" alt="" loading="lazy" decoding="async" />
+      <figcaption><span>BROWSER GAME</span><span>비춰 보기 ↗</span></figcaption>
+    </>
+  ) : <figcaption>PROJECT</figcaption>}
+</figure>
+
+<style>
+  @property --gx { syntax: '<percentage>'; inherits: true; initial-value: 50%; }
+  @property --gy { syntax: '<percentage>'; inherits: true; initial-value: 45%; }
+  .project-art { position: relative; width: 100%; aspect-ratio: 1.16; margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; isolation: isolate; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .6s var(--spring), --gx .5s ease-out, --gy .5s ease-out, box-shadow .4s; }
+  .project-art:global(.is-lit) { transition-duration: .15s, .25s, .25s, .4s; box-shadow: 0 30px 60px -20px rgb(0 0 0 / .6); }
+  /* glare that follows the pointer */
+  .project-art::after { content: ''; position: absolute; inset: 0; z-index: 3; background: radial-gradient(circle at var(--gx) var(--gy), rgb(255 255 255 / .22), transparent 45%); mix-blend-mode: soft-light; opacity: 0; transition: opacity .4s; pointer-events: none; }
+  .project-art:global(.is-lit)::after { opacity: 1; }
+  .project-art--squish { background: #e7e5e0; color: #53536c; }
+  .art__word { position: absolute; inset: 5% 0 auto; text-align: center; font-family: var(--f-display); font-size: clamp(3rem, 8vw, 8rem); line-height: 1; letter-spacing: -.075em; color: #bcbcc6; translate: calc((var(--gx) - 50%) * -.08) 0; }
+  .art__character { position: absolute; inset: 23% 12% 12%; display: grid; place-items: center; }
+  .art__touch { width: 100%; max-width: 390px; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 40%; transform-origin: 50% 85%; transition: transform .6s var(--spring); touch-action: pan-y; }
+  .art__touch img { width: 100%; pointer-events: none; filter: drop-shadow(0 22px 16px rgb(74 45 76 / .12)); transform-origin: 50% 90%; animation: breathe 3.2s ease-in-out infinite; }
+  .art__touch:hover img { animation-duration: 1.1s; }
+  .art__touch:global(.is-pressed) { transform: scale(1.12, .78); transition-duration: .15s; }
+  figcaption { position: absolute; inset: auto 24px 20px; display: flex; justify-content: space-between; gap: 12px; font-family: var(--f-mono); font-size: .55rem; letter-spacing: .06em; }
+  .project-art--lamp { background: #0c1018; color: #d2b88f; cursor: crosshair; }
+  /* Parallax: --gx/--gy (pointer or tap, set by page-motion) move each layer by a different amount. */
+  .art__street { position: absolute; inset: -4%; width: 108%; height: 108%; max-width: none; object-fit: cover; object-position: 18% 50%; translate: calc((var(--gx) - 50%) * -.05) calc((var(--gy) - 45%) * -.03); filter: brightness(.8); }
+  /* a warm light where you point (or tap) */
+  .art__light { position: absolute; inset: 0; background: radial-gradient(circle at var(--gx) var(--gy), rgb(255 196 112 / .3), rgb(245 172 77 / .08) 30%, transparent 58%); mix-blend-mode: screen; }
+  .art__keeper { position: absolute; left: 4%; bottom: 3%; height: 90%; aspect-ratio: 465 / 760; translate: calc((var(--gx) - 50%) * -.16) calc((var(--gy) - 45%) * -.06); transform-origin: 50% 100%; animation: keeper 5.2s ease-in-out infinite; }
+  .art__keeper img { width: 100%; height: 100%; filter: drop-shadow(0 14px 20px #000c); }
+  /* the flame at the tip of the pole (3.5% / 4% of the figure, as in the game) */
+  .art__flame { position: absolute; left: 3.5%; top: 4%; width: 46%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle, rgb(255 236 190 / .9), rgb(255 196 110 / .5) 18%, rgb(255 140 50 / .15) 45%, transparent 70%); mix-blend-mode: screen; animation: flame 2.6s ease-in-out infinite; }
+  .art__embers i { position: absolute; left: calc(3.5% + var(--x)); top: 4%; width: 3px; height: 3px; border-radius: 50%; background: #ffc074; box-shadow: 0 0 8px #ffa94d; opacity: 0; animation: ember 4.5s var(--d) ease-out infinite; }
+  .art__embers i:nth-child(1) { --x: -2%; --d: 0s; }
+  .art__embers i:nth-child(2) { --x: 2%; --d: .7s; }
+  .art__embers i:nth-child(3) { --x: 0%; --d: 1.4s; }
+  .art__embers i:nth-child(4) { --x: 3%; --d: 2.1s; }
+  .art__embers i:nth-child(5) { --x: -3%; --d: 2.8s; }
+  .art__embers i:nth-child(6) { --x: 1%; --d: 3.4s; }
+  .art__embers i:nth-child(7) { --x: -1%; --d: 4s; }
+  .art__logo { position: absolute; right: 5%; top: 9%; width: 52%; translate: calc((var(--gx) - 50%) * .05) calc((var(--gy) - 45%) * .04); filter: drop-shadow(0 6px 14px #000c); transition: filter .8s; }
+  .project-art--lamp:global(.is-lit) .art__logo { filter: drop-shadow(0 6px 14px #000c) drop-shadow(0 0 18px rgb(255 196 112 / .45)); }
+  /* Scroll story steps (detail pages set data-step on an ancestor; the home page never does):
+     0 dark street, lamplighter in silhouette · 1 the kerb lamps catch one by one · 2 everything glows. */
+  .art__street, .art__keeper img, .art__logo, .art__flame { transition: filter .8s, opacity .8s, scale .8s; }
+  :global([data-step='0']) .art__street { filter: brightness(.4); }
+  :global([data-step='0']) .art__keeper img { filter: brightness(.35) drop-shadow(0 14px 20px #000c); }
+  :global([data-step='0']) .art__logo { filter: brightness(.45); }
+  :global([data-step='1']) .art__street { filter: brightness(.7); }
+  :global([data-step='2']) .art__street { filter: brightness(1) saturate(1.1); }
+  :global([data-step='2']) .art__flame { scale: 1.5; }
+  :global([data-step='2']) .art__logo { filter: drop-shadow(0 6px 14px #000c) drop-shadow(0 0 24px rgb(255 196 112 / .6)); }
+  .art__lamps i { position: absolute; left: var(--x); top: 84%; width: 10%; aspect-ratio: 1; translate: -50% -50%; background: url(/lamplighter/lamps-off.webp) calc(var(--cell) * 12.5%) 0 / 900% 100%; opacity: 0; scale: .4; transition: opacity .4s calc(var(--i) * .2s), scale .6s var(--spring) calc(var(--i) * .2s); }
+  .art__lamps i::after { content: ''; position: absolute; inset: 0; background: url(/lamplighter/lamps-on.webp) calc(var(--cell) * 12.5%) 0 / 900% 100%; opacity: 0; transition: opacity .4s calc(.7s + var(--i) * .35s); }
+  :global([data-step='1']) .art__lamps i, :global([data-step='2']) .art__lamps i { opacity: 1; scale: 1; }
+  :global([data-step='1']) .art__lamps i::after, :global([data-step='2']) .art__lamps i::after { opacity: 1; }
+  :global([data-step='1']) .art__lamps i, :global([data-step='2']) .art__lamps i { filter: drop-shadow(0 0 12px rgb(255 196 112 / .7)); }
+  /* Home card: the lamps are always there. Lit by default (no script, reduced motion); with motion they
+     start unlit and lights-out.ts lights them once (Totillu's errand), then they stay lit. */
+  :global(.work) .art__lamps i { opacity: 1; scale: 1; transition: scale .4s var(--spring), filter .4s; }
+  :global(.work) .art__lamps i::after { opacity: 1; transition: opacity .3s; }
+  :global(.work) .art__lamps i { filter: drop-shadow(0 0 12px rgb(255 196 112 / .7)); }
+  :global(.fx .work .art__lamps i:not(.is-lit)) { filter: drop-shadow(0 3px 4px rgb(0 0 0 / .5)); }
+  :global(.fx .work .art__lamps i:not(.is-lit)::after) { opacity: 0; }
+  :global(.work .art__lamps i.is-lit) { animation: lamp-pop .5s ease-out; }
+  :global(.work.is-dark .art__lamps i:not(.is-lit)) { pointer-events: auto; cursor: pointer; }
+  :global(.work.is-dark .art__lamps i:not(.is-lit):hover) { scale: 1.15; }
+  @keyframes lamp-pop { 40% { scale: 1.3; } }
+  :global([data-step='1']) .art__touch img { animation: breathe 1.1s ease-in-out infinite, recolor 4s linear infinite; }
+  :global([data-step='1']) .art__word { letter-spacing: .02em; }
+  .art__word { transition: letter-spacing .8s var(--spring); }
+  .art__hearts i { position: absolute; left: var(--x); bottom: 22%; color: #f69bbb; font-size: clamp(.9rem, 2vw, 1.5rem); opacity: 0; }
+  .art__hearts i:nth-child(1) { --x: 24%; --d: 0s; }
+  .art__hearts i:nth-child(2) { --x: 70%; --d: .5s; }
+  .art__hearts i:nth-child(3) { --x: 40%; --d: 1s; }
+  .art__hearts i:nth-child(4) { --x: 80%; --d: 1.5s; }
+  .art__hearts i:nth-child(5) { --x: 16%; --d: 2s; }
+  :global([data-step='2']) .art__hearts i { animation: heart 2.6s var(--d) ease-out infinite; }
+  :global([data-step='2']) .project-art--squish::before { content: ''; position: absolute; inset: 0; z-index: 4; background: #fff; pointer-events: none; animation: flash .7s ease-out both; }
+  @keyframes recolor { to { filter: drop-shadow(0 22px 16px rgb(74 45 76 / .12)) hue-rotate(360deg); } }
+  @keyframes heart { 0% { opacity: 0; transform: none; } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -180%) rotate(16deg) scale(1.3); } }
+  @keyframes flash { from { opacity: .85; } to { opacity: 0; } }
+  @keyframes breathe { 50% { scale: 1.03 .97; } }
+  @keyframes keeper { 50% { scale: 1 1.012; rotate: -.4deg; } }
+  @keyframes flame { 0%, 100% { opacity: 1; scale: 1; } 37% { opacity: .8; scale: .92; } 41% { opacity: 1; scale: 1.06; } 73% { opacity: .88; scale: .97; } }
+  @keyframes ember { 0% { opacity: 0; transform: none; } 15% { opacity: 1; } 50% { transform: translate(6px, -60px); } 100% { opacity: 0; transform: translate(-4px, -130px) scale(.4); } }
+  @media (max-width: 760px) {
+    .project-art { aspect-ratio: 1.6; }
+    .art__word { font-size: 3.8rem; }
+    .art__character { inset: 21% 22% 13%; }
+    figcaption { inset-inline: 16px; bottom: 14px; font-size: .5rem; }
+    .art__keeper { height: 94%; left: 6%; }
+    .art__logo { width: 44%; top: 8%; }
+    .art__lamps i { top: 74%; width: 8%; }
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import '@fontsource-variable/space-grotesk/wght.css';
+import '@fontsource/geist-mono/latin-400.css';
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import QuickNav from '../components/QuickNav.astro';
+import { profile } from '../config/profile';
+
+interface Props {
+  title?: string;
+  description?: string;
+  snap?: boolean;
+}
+
+const { title, description = profile.intro, snap = false } = Astro.props;
+const fullTitle = title ? `${title} — ${profile.brand}` : `${profile.brand} — Developer Portfolio`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+---
+
+<!doctype html>
+<html lang="ko" class:list={{ 'snap-page': snap }}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#090c12" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="BeepLabX 개발 포트폴리오와 BX 로고" />
+    <noscript><style>.menu-btn, .companion, .walk-toggle { display: none !important; }</style></noscript>
+    <script is:inline>if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('fx');</script>
+  </head>
+  <body>
+    <div class="reading-progress" data-progress aria-hidden="true"></div>
+    <a class="skip" href="#main">본문으로 건너뛰기</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <QuickNav />
+    <script>
+      import { initPageMotion } from '../scripts/page-motion';
+      initPageMotion();
+    </script>
+  </body>
+</html>

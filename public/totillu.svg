@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="110 70 390 335" style="--totillu-color:#f19ab8">
+        <defs>
+          <path id="totillu-body" d="M 300 101 C 231 96 180 126 159 187 C 148 218 146 251 132 281 C 110 329 139 356 187 365 C 243 377 355 376 414 362 C 461 351 481 321 460 278 C 447 250 449 218 430 178 C 407 129 364 102 300 101 Z" />
+          <clipPath id="totillu-clip"><use href="#totillu-body" /></clipPath>
+          <radialGradient id="body-color" cx="38%" cy="25%" r="80%">
+            <stop offset="0" stop-color="white" />
+            <stop offset="0.27" stop-color="var(--totillu-color)" stop-opacity="0.4" />
+            <stop offset="0.65" stop-color="var(--totillu-color)" stop-opacity="0.88" />
+            <stop offset="1" stop-color="var(--totillu-color)" />
+          </radialGradient>
+          <radialGradient id="soft-core" cx="51%" cy="60%" r="52%">
+            <stop offset="0" stop-color="var(--totillu-color)" stop-opacity="0.6" />
+            <stop offset="1" stop-color="var(--totillu-color)" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="belly-light" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0.48" stop-color="#d4c9fa" stop-opacity="0" />
+            <stop offset="0.86" stop-color="#d9d4fc" stop-opacity="0.5" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0.95" />
+          </linearGradient>
+          <linearGradient id="glass-edge" x1="0" y1="0" x2="0.8" y2="1">
+            <stop stop-color="white" stop-opacity="0.95" />
+            <stop offset="0.46" stop-color="white" stop-opacity="0.28" />
+            <stop offset="0.8" stop-color="white" stop-opacity="0.64" />
+            <stop offset="1" stop-color="white" stop-opacity="0.95" />
+          </linearGradient>
+          <radialGradient id="blush">
+            <stop stop-color="#ed6b91" stop-opacity="0.65" />
+            <stop offset="0.55" stop-color="#f985a6" stop-opacity="0.35" />
+            <stop offset="1" stop-color="#ff9db8" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="eye-gloss" cx="35%" cy="25%" r="80%">
+            <stop stop-color="#75424b" />
+            <stop offset="0.52" stop-color="#3f2832" />
+            <stop offset="1" stop-color="#251d2a" />
+          </radialGradient>
+          <linearGradient id="heart-color" x1="0" y1="0" x2="0.6" y2="1">
+            <stop stop-color="#ffc5da" /><stop offset="0.5" stop-color="#ff7faf" /><stop offset="1" stop-color="#ed4e8c" />
+          </linearGradient>
+          <filter id="shadow-blur" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="9" /></filter>
+          <filter id="soft-light" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" /></filter>
+          <filter id="gloss-soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.6" /></filter>
+        </defs>
+        <ellipse id="totillu-shadow" cx="306" cy="380" rx="156" ry="14" fill="#9382b8" opacity="0.22" filter="url(#shadow-blur)" />
+        <ellipse cx="300" cy="374" rx="113" ry="7" fill="var(--totillu-color)" opacity="0.22" filter="url(#soft-light)" />
+        <use href="#totillu-body" fill="#fff8fb" />
+        <use href="#totillu-body" fill="url(#body-color)" />
+        <g clip-path="url(#totillu-clip)">
+          <use href="#totillu-body" fill="url(#soft-core)" />
+          <use href="#totillu-body" fill="url(#belly-light)" />
+          <use href="#totillu-body" fill="none" stroke="#fff" stroke-width="19" opacity="0.52" filter="url(#soft-light)" />
+          <path class="totillu-reflection" d="M 167 247 C 169 188 194 143 243 124 C 262 117 277 116 291 116" fill="none" stroke="white" stroke-width="9" stroke-linecap="round" opacity="0.72" filter="url(#gloss-soft)" />
+          <path class="totillu-reflection" d="M 435 252 C 437 225 428 197 415 180" fill="none" stroke="#fff7e7" stroke-width="11" stroke-linecap="round" opacity="0.72" filter="url(#soft-light)" />
+          <path class="totillu-reflection" d="M 150 296 C 140 326 164 344 187 347" fill="none" stroke="white" stroke-width="12" stroke-linecap="round" opacity="0.5" filter="url(#soft-light)" />
+          <path class="totillu-reflection" d="M 395 349 C 420 343 435 333 440 317" fill="none" stroke="white" stroke-width="12" stroke-linecap="round" opacity="0.75" filter="url(#gloss-soft)" />
+          <ellipse id="totillu-gloss-spot" cx="217" cy="161" rx="24" ry="13" transform="rotate(-43 217 161)" fill="white" opacity="0.75" filter="url(#gloss-soft)" />
+        </g>
+        <use href="#totillu-body" fill="none" stroke="url(#glass-edge)" stroke-width="3" />
+        <g id="totillu-face" transform="translate(300 247)">
+          <ellipse cx="-79" cy="23" rx="32" ry="23" fill="url(#blush)" />
+          <ellipse cx="79" cy="23" rx="32" ry="23" fill="url(#blush)" />
+          <g transform="translate(-48 -6)"><g class="totillu-eye">
+            <ellipse rx="15" ry="19" fill="url(#eye-gloss)" stroke="#4b2935" stroke-width="1.2" />
+            <ellipse cx="-4" cy="-8" rx="5.2" ry="6" fill="#fff" opacity="0.95" />
+            <ellipse cx="5" cy="9" rx="3.7" ry="2.4" fill="#ad7884" opacity="0.45" />
+          </g></g>
+          <g transform="translate(48 -6)"><g class="totillu-eye">
+            <ellipse rx="15" ry="19" fill="url(#eye-gloss)" stroke="#4b2935" stroke-width="1.2" />
+            <ellipse cx="-4" cy="-8" rx="5.2" ry="6" fill="#fff" opacity="0.95" />
+            <ellipse cx="5" cy="9" rx="3.7" ry="2.4" fill="#ad7884" opacity="0.45" />
+          </g></g>
+          <path d="M -14 9 C -9 6 -5 12 0 11 C 5 12 9 6 14 9 C 18 14 11 28 0 28 C -11 28 -18 14 -14 9 Z" fill="#662c3e" stroke="#4d2936" stroke-width="1.5" />
+          <path d="M -10 23 Q 0 13 10 23 Q 0 32 -10 23" fill="#ff829f" />
+          <circle cx="-86" cy="18" r="2.5" fill="white" opacity="0.48" />
+          <circle cx="86" cy="18" r="2.5" fill="white" opacity="0.48" />
+        </g>
+        <g id="totillu-heart" transform="translate(383 142) rotate(18)">
+          <path d="M 0 4 C -8 -5 -35 -19 -29 -39 C -24 -55 -4 -49 0 -33 C 7 -49 28 -51 32 -33 C 36 -16 11 0 0 4 Z" fill="url(#heart-color)" stroke="#ffb7d1" stroke-width="1.5" />
+          <ellipse cx="-17" cy="-36" rx="4" ry="8" transform="rotate(28 -17 -36)" fill="white" opacity="0.83" />
+          <path d="M 25 -32 Q 29 -26 23 -19" fill="none" stroke="#ffd2dc" stroke-width="3" stroke-linecap="round" opacity="0.65" />
+        </g>
+      </svg>

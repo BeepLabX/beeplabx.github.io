@@ -1,0 +1,32 @@
+---
+import { profile, githubUrl } from '../config/profile';
+---
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="/" aria-label={`${profile.brand} 홈`}>
+      <img class="brand__mark" src="/brand.png" width="40" height="40" alt="" />
+      {profile.brand}
+    </a>
+    <nav aria-label="주요 메뉴">
+      <a class="header__works" href="/#works">Works</a>
+      <a class="header__github" href={githubUrl} target="_blank" rel="noopener">GitHub ↗<span class="sr-only"> (새 탭)</span></a>
+      <button class="menu-btn" type="button" data-quicknav-open aria-haspopup="dialog" aria-keyshortcuts="/ Control+K Meta+K">
+        메뉴 <kbd aria-hidden="true">/</kbd>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header { view-transition-name: header; position: fixed; inset: 0 0 auto; z-index: 20; height: var(--header-h); background: rgb(9 12 18 / .88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); }
+  .header__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .brand { display: flex; flex-shrink: 0; white-space: nowrap; align-items: center; gap: 12px; min-height: 44px; font-family: var(--f-display); font-size: 1.15rem; font-weight: 650; letter-spacing: -.035em; text-decoration: none; }
+  .brand__mark { width: 40px; height: 40px; border-radius: 8px; }
+  nav { display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); font-size: .85rem; }
+  nav a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; text-decoration: none; color: var(--dim); transition: color .2s; }
+  nav a:hover { color: var(--paper); }
+  .menu-btn { display: inline-flex; align-items: center; gap: 14px; background: none; border: 1px solid var(--line); border-radius: 8px; min-height: 40px; padding: 0 12px; cursor: pointer; font-size: .85rem; }
+  kbd { color: var(--dim); font-family: var(--f-mono); }
+  @media (max-width: 600px) { .header .header__works, .header .header__github { display: none; } }
+</style>

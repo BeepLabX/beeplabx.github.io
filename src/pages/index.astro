@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Works from '../components/Works.astro';
+
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+const chapters = [{ href: '#intro', label: 'Intro' }, ...works.map(w => ({ href: `#project-${w.id}`, label: w.data.title }))];
+---
+
+<Base snap>
+  <Hero />
+  <Works />
+  <nav class="rail" aria-label="섹션 바로 가기" data-rail>
+    {chapters.map((c, i) => (
+      <a href={c.href}><span class="rail__label">{c.label}</span><span class="rail__num mono">{String(i).padStart(2, '0')}</span><span class="rail__tick"></span></a>
+    ))}
+  </nav>
+</Base>
+
+<style>
+  /* Chapter rail: labels show on hover, and flash briefly when a new chapter arrives (so touch screens see them too). */
+  .rail { position: fixed; right: clamp(4px, 1.6vw, 24px); top: 50%; translate: 0 -50%; z-index: 15; display: grid; }
+  .rail a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-width: 44px; min-height: 36px; color: var(--dim); text-decoration: none; transition: color .3s; }
+  .rail__label { padding: 2px 8px; border-radius: 4px; background: rgb(9 12 18 / .75); font-family: var(--f-display); font-size: .75rem; white-space: nowrap; opacity: 0; translate: 8px 0; transition: opacity .3s, translate .3s; }
+  .rail__num { font-size: .6rem; }
+  .rail__tick { width: 12px; height: 1px; background: currentColor; transition: width .6s var(--spring), background-color .3s; }
+  .rail:hover .rail__label, .rail a:focus-visible .rail__label { opacity: 1; translate: none; }
+  .rail a:hover, .rail a[aria-current='true'] { color: var(--paper); }
+  .rail a[aria-current='true'] .rail__tick { width: 32px; background: var(--scroll-accent, var(--lamp)); }
+  .rail a:global(.is-flash) .rail__label { animation: flash 1.8s ease both; }
+  @keyframes flash { 15%, 70% { opacity: 1; translate: none; } }
+  @media (max-width: 760px) {
+    .rail__num { display: none; }
+    .rail a { gap: 6px; min-height: 32px; }
+    .rail__tick { width: 8px; }
+    .rail a[aria-current='true'] .rail__tick { width: 20px; }
+  }
+</style>

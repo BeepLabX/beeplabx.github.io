@@ -1,0 +1,253 @@
+---
+import { getCollection } from 'astro:content';
+import { profile, githubUrl } from '../config/profile';
+
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+
+type Item = { label: string; meta: string; href: string; external?: boolean };
+const groups: { title: string; items: Item[] }[] = [
+  {
+    title: '섹션',
+    items: [
+      { label: '처음으로', meta: 'Top', href: '/' },
+      { label: 'Selected Works', meta: '작업', href: '/#works' },
+    ],
+  },
+  {
+    title: '작업',
+    items: works.flatMap((w) => [
+      { label: w.data.title, meta: '상세', href: `/works/${w.id}/` },
+      { label: `${w.data.title} 열기`, meta: '새 탭', href: w.data.url, external: true },
+    ]),
+  },
+  {
+    title: '링크',
+    items: [
+      { label: 'GitHub', meta: profile.githubUser, href: githubUrl, external: true },
+    ],
+  },
+];
+---
+
+<dialog class="qn" aria-label="빠른 이동" data-quicknav>
+  <form method="dialog" class="qn__top">
+    <label class="sr-only" for="qn-filter">이동할 곳 검색</label>
+    <input id="qn-filter" class="qn__filter" type="search" placeholder="어디로 갈까요?" autocomplete="off" spellcheck="false" />
+    <button class="qn__close" type="submit" aria-label="닫기">Esc</button>
+  </form>
+  <div class="qn__list">
+    {
+      groups.map((g) => (
+        <section class="qn__group">
+          <h2 class="label">{g.title}</h2>
+          <ul>
+            {g.items.map((i) => (
+              <li>
+                <a href={i.href} {...(i.external ? { target: '_blank', rel: 'noopener' } : {})} data-qn-item>
+                  <span>{i.label}</span>
+                  <span class="mono">
+                    {i.meta}
+                    {i.external && ' ↗'}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+    <p class="qn__empty" hidden>일치하는 항목이 없습니다.</p>
+  </div>
+  <p class="qn__keys mono" aria-hidden="true">↑↓ 이동 · Enter 열기 · Esc 닫기</p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-quicknav]')!;
+  const filter = dialog.querySelector<HTMLInputElement>('.qn__filter')!;
+  const empty = dialog.querySelector<HTMLElement>('.qn__empty')!;
+  const items = [...dialog.querySelectorAll<HTMLAnchorElement>('[data-qn-item]')];
+
+  const visible = () => items.filter((a) => !a.closest('li')!.hidden);
+
+  function open() {
+    if (dialog.open) return;
+    filter.value = '';
+    applyFilter();
+    dialog.showModal();
+    filter.focus();
+  }
+
+  function applyFilter() {
+    const q = filter.value.trim().toLowerCase();
+    for (const a of items) a.closest('li')!.hidden = !!q && !a.textContent!.toLowerCase().includes(q);
+    for (const g of dialog.querySelectorAll<HTMLElement>('.qn__group')) g.hidden = !g.querySelector('li:not([hidden])');
+    empty.hidden = visible().length > 0;
+  }
+
+  filter.addEventListener('input', applyFilter);
+
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
+    const list = visible();
+    if (!list.length) return;
+    const i = list.indexOf(document.activeElement as HTMLAnchorElement);
+    if (e.key === 'Enter') {
+      if (document.activeElement === filter) {
+        e.preventDefault();
+        list[0].click();
+      }
+      return;
+    }
+    e.preventDefault();
+    const next = e.key === 'ArrowDown' ? (i + 1) % list.length : i <= 0 ? list.length - 1 : i - 1;
+    list[next].focus();
+  });
+
+  // Same-page anchors: close first so the scroll lands on the target.
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) return dialog.close();
+    const a = (e.target as Element).closest<HTMLAnchorElement>('[data-qn-item]');
+    if (a && !a.target) dialog.close();
+  });
+
+  for (const b of document.querySelectorAll('[data-quicknav-open]')) b.addEventListener('click', open);
+
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement;
+    const typing = t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName);
+    if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      dialog.open ? dialog.close() : open();
+    } else if (e.key === '/' && !typing && !dialog.open) {
+      e.preventDefault();
+      open();
+    }
+  });
+</script>
+
+<style>
+  .qn {
+    width: min(560px, calc(100vw - 24px));
+    max-height: min(640px, calc(100dvh - 48px));
+    margin: 10vh auto auto;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--ink-2);
+    color: var(--paper);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.55);
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  .qn[open] {
+    display: flex;
+  }
+
+  .qn::backdrop {
+    background: rgb(5 6 12 / 0.6);
+    backdrop-filter: blur(3px);
+  }
+
+  .qn__top {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .qn__filter {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ink-3);
+    font-size: 1rem;
+  }
+
+  .qn__filter:focus-visible {
+    outline-offset: 0;
+  }
+
+  .qn__close {
+    min-width: 52px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    font-family: var(--f-mono);
+    font-size: 0.78rem;
+    color: var(--dim);
+  }
+
+  .qn__list {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 6px 10px 12px;
+  }
+
+  .qn__group h2 {
+    padding: 14px 10px 6px;
+    font-size: 0.7rem;
+    font-weight: 400;
+  }
+
+  .qn ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .qn a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+  }
+
+  .qn a .mono {
+    color: var(--dim);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .qn a:hover,
+  .qn a:focus-visible {
+    background: var(--ink-3);
+    outline: none;
+    box-shadow: inset 2px 0 0 var(--lamp);
+  }
+
+  .qn__empty {
+    padding: 20px 10px;
+    color: var(--dim);
+  }
+
+  .qn__keys {
+    margin: 0;
+    padding: 10px 16px;
+    border-top: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 0.72rem;
+  }
+
+  @media (hover: none) {
+    .qn__keys {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .qn {
+      margin-top: 12px;
+    }
+  }
+</style>
