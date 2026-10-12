@@ -59,11 +59,22 @@ export function initParticleTitle(hero: HTMLElement, title: HTMLElement, next: H
     return points.sort((p, q) => p.x - q.x);
   }
 
-  function layout() {
+  // The canvas matches the current viewport in CSS pixels. Not 100vh: on phones that is the height with
+  // the address bar hidden, which would stretch the drawing and land the particles below their targets.
+  function size() {
     dpr = Math.min(2, devicePixelRatio || 1);
     canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr);
-    const size = parseFloat(getComputedStyle(title).fontSize), gap = Math.max(3, Math.round(size / 32));
-    dot = gap * .72; reach = size * .9;
+    canvas.style.width = `${innerWidth}px`; canvas.style.height = `${innerHeight}px`;
+    blank = false;
+    wake();
+  }
+
+  let sampledWidth = 0;
+  function layout() {
+    size();
+    sampledWidth = innerWidth;
+    const font = parseFloat(getComputedStyle(title).fontSize), gap = Math.max(3, Math.round(font / 32));
+    dot = gap * .72; reach = font * .9;
     const from = sample(title, gap), to = next ? sample(next, gap) : from;
     const panel = next?.closest<HTMLElement>('.snap-panel');
     const header = document.querySelector<HTMLElement>('.header')?.offsetHeight ?? 0;
@@ -74,8 +85,6 @@ export function initParticleTitle(hero: HTMLElement, title: HTMLElement, next: H
       const angle = Math.random() * Math.PI * 2, far = .35 + Math.random() * .65, dx = Math.cos(angle) * far, dy = Math.sin(angle) * far;
       return { ax: p.x, ay: p.y, bx: q.x, by: q.y, dx, dy, x: prev?.x ?? p.x + dx * w * .6, y: prev?.y ?? p.y + dy * h * .6, vx: 0, vy: 0, a: .55 + Math.random() * .45, accent: p.accent };
     });
-    blank = false;
-    wake();
   }
 
   // Fixed 60 Hz steps, so 120 Hz screens and throttled tabs move at the same pace.
@@ -153,10 +162,13 @@ export function initParticleTitle(hero: HTMLElement, title: HTMLElement, next: H
   hero.addEventListener('touchend', () => { pointer = null; wake(); }, { passive: true });
   addEventListener('scroll', () => { if (!blank || progress() < 1) wake(); }, { passive: true });
   let resizeTimer: ReturnType<typeof setTimeout> | undefined;
-  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(layout, 150); });
+  // Measure once fonts are in and the next title isn't mid-entrance (its rise would offset the targets).
+  const settled = () => Promise.allSettled(next?.getAnimations().map(a => a.finished) ?? []);
+  // Height-only resizes (a phone's address bar sliding away mid-scroll) keep the layout: just refit the canvas.
+  addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => (innerWidth === sampledWidth ? size() : void settled().then(layout)), 150);
+  });
 
-  // Measure once fonts are in and the next title isn't mid-entrance.
-  return document.fonts.ready
-    .then(() => Promise.allSettled(next?.getAnimations().map(a => a.finished) ?? []))
-    .then(() => { layout(); title.classList.add('is-particle'); });
+  return document.fonts.ready.then(settled).then(() => { layout(); title.classList.add('is-particle'); });
 }

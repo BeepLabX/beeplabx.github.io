@@ -7,8 +7,11 @@ const WORKS = [
 
 function collectErrors(page: Page) {
   const errors: string[] = [];
-  page.on('pageerror', e => errors.push(e.message));
-  page.on('console', m => m.type() === 'error' && errors.push(m.text()));
+  // Chrome reports this when a navigation starts before the old page has painted: it only skips the
+  // page-to-page animation, the navigation itself goes through.
+  const benign = (text: string) => text.startsWith('Transition was aborted');
+  page.on('pageerror', e => !benign(e.message) && errors.push(e.message));
+  page.on('console', m => m.type() === 'error' && !benign(m.text()) && errors.push(m.text()));
   return errors;
 }
 
@@ -81,6 +84,17 @@ test('the hero particles fly into the first project title and back', async ({ pa
   const inked = () => page.locator('.hero__particles').evaluate((c: HTMLCanvasElement) =>
     c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0));
   await expect.poll(inked).toBe(true);
+  // The drawing must not be stretched: canvas box = current viewport, also after a height-only resize
+  // (what a phone's address bar does).
+  const fits = () => page.locator('.hero__particles').evaluate((c: HTMLCanvasElement) => {
+    const r = c.getBoundingClientRect();
+    return Math.abs(r.height - innerHeight) < 1 && Math.abs(r.width - innerWidth) < 1;
+  });
+  expect(await fits()).toBe(true);
+  const vp = page.viewportSize()!;
+  await page.setViewportSize({ width: vp.width, height: vp.height - 60 });
+  await expect.poll(fits).toBe(true);
+  await page.setViewportSize(vp);
   await page.locator('[data-work="totillu"]').scrollIntoViewIfNeeded();
   await expect.poll(inked, { timeout: 5000 }).toBe(false);
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));

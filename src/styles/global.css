@@ -42,7 +42,7 @@ html.snap-page { scroll-snap-type: y mandatory; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--scroll-accent, var(--lamp)); border: 2px solid var(--ink); border-radius: 8px; }
 /* The hero's particle wordmark (particle-title.ts): one fixed layer, so it can fly into the next panel. */
-.hero__particles { position: fixed; inset: 0; z-index: 13; width: 100vw; height: 100vh; pointer-events: none; }
+.hero__particles { position: fixed; left: 0; top: 0; z-index: 13; pointer-events: none; } /* sized to the viewport by script */
 
 /* Film grain over everything; purely decorative. */
 body::after { content: ''; position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: .07; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
