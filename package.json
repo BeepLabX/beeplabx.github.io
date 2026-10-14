@@ -10,7 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "node --test scripts/ci-policy.test.mjs && astro check",
     "test": "playwright test"
   },
   "dependencies": {
