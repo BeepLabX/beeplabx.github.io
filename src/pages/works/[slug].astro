@@ -210,12 +210,13 @@ const t = d.theme;
     transition: opacity 0.5s;
   }
 
-  .story .prose > :global(:not(.is-current)) {
-    opacity: 0.3;
+  /* Only once the script has marked a chapter (data-ready), and never below 4.5:1 contrast (0.55 ≈ 5.7:1 on the dark themes). */
+  .story[data-ready] .prose > :global(:not(.is-current)) {
+    opacity: 0.55;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .story .prose > :global(:not(.is-current)) {
+    .story[data-ready] .prose > :global(:not(.is-current)) {
       opacity: 1;
     }
   }

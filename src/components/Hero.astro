@@ -85,7 +85,8 @@ import { profile, githubUrl } from '../config/profile';
     .hero__art { width: min(52vw, 240px); justify-self: end; }
     .hero__bottom { font-size: .55rem; align-items: center; }
   }
-  @media (max-height: 700px) and (min-width: 761px) {
+  /* Laptop heights (≈720–860px) too: otherwise the bottom link slides under the fixed footer. */
+  @media (max-height: 860px) and (min-width: 761px) {
     .hero__inner { padding-block: 20px; }
     .hero__grid { padding-block: 24px; }
     .hero__lede { margin-top: 20px; }

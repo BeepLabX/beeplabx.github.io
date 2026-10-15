@@ -14,7 +14,7 @@ const { effect, name } = Astro.props;
         </button>
       </div>
       <div class="art__hearts" aria-hidden="true"><i>♥</i><i>♥</i><i>♥</i><i>♥</i><i>♥</i></div>
-      <figcaption><span>CHARACTER CREATOR</span><span>눌러 보기 ↗</span></figcaption>
+      <figcaption><span>CHARACTER CREATOR</span><span>눌러 보기</span></figcaption>
     </>
   ) : effect === 'lamp' ? (
     <>
@@ -30,7 +30,7 @@ const { effect, name } = Astro.props;
         {[2, 7, 3, 8].map((cell, i) => <i style={`--cell:${cell};--x:${53 + i * 13}%;--i:${i}`}></i>)}
       </div>
       <img class="art__logo" src="/lamplighter/title-logo.webp" width="640" height="266" alt="" loading="lazy" decoding="async" />
-      <figcaption><span>BROWSER GAME</span><span>비춰 보기 ↗</span></figcaption>
+      <figcaption><span>BROWSER GAME</span><span>비춰 보기</span></figcaption>
     </>
   ) : <figcaption>PROJECT</figcaption>}
 </figure>

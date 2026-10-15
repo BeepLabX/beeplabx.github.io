@@ -255,6 +255,29 @@ test('quick navigation supports filtering and direct navigation', async ({ page 
   await expect(page).toHaveURL(/\/works\/lamplighter\/$/);
 });
 
+test('quick navigation stays open on Enter when nothing matches', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '메뉴', exact: true }).click();
+  const filter = page.locator('#qn-filter');
+  await filter.fill('zzzq');
+  await expect(page.getByRole('status')).toHaveText('일치하는 항목이 없습니다.');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[data-quicknav]')).toBeVisible();
+  await expect(filter).toBeFocused();
+  await expect(filter).toHaveValue('zzzq');
+});
+
+test('short laptop screens keep the hero bottom link above the fixed footer', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'desktop layout only');
+  for (const [width, height] of [[1188, 761], [1280, 720], [1366, 768], [1440, 800], [1536, 864], [1440, 861], [1920, 861], [1440, 900]]) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/');
+    const gap = await page.evaluate(() =>
+      document.querySelector('.footer')!.getBoundingClientRect().top - document.querySelector('.hero__bottom a')!.getBoundingClientRect().bottom);
+    expect(gap, `${width}x${height}`).toBeGreaterThanOrEqual(0);
+  }
+});
+
 test('quick navigation restores focus on Escape', async ({ page }) => {
   await page.goto('/');
   const menu = page.getByRole('button', { name: '메뉴', exact: true });
@@ -296,6 +319,8 @@ test('detail page chapters drive the pinned artwork', async ({ page }) => {
     await expect(page.locator(`[data-story-step="${step}"]`)).toHaveClass(/is-current/);
     await expect(headings.nth(step)).toHaveClass(/is-current/);
   }
+  // Earlier chapters dim but stay readable (≥ 4.5:1).
+  await expect(headings.nth(1)).toHaveCSS('opacity', '0.55');
   await expect(page.locator('.detail__media .project-art')).toBeInViewport();
   await expect(page.locator('.story__cta a')).toHaveAttribute('href', 'https://lamp.beeplab.workers.dev/');
   await noHorizontalScroll(page);
@@ -332,6 +357,10 @@ test('the site works without JavaScript', async ({ browser, baseURL }) => {
   await expect(page.locator('#hero-title')).toHaveCSS('opacity', '1');
   await page.locator('#works a[href="/works/totillu/"]').click();
   await expect(page.locator('h1')).toHaveText('Totillu');
+  for (const part of await page.locator('.prose > *').all()) await expect(part).toHaveCSS('opacity', '1');
+  await page.goto('/no-such-page/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('페이지를 찾을 수');
+  await expect(page.getByRole('button', { name: '메뉴 열기' })).toBeHidden();
   await context.close();
 });
 

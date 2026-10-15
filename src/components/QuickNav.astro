@@ -56,7 +56,7 @@ const groups: { title: string; items: Item[] }[] = [
         </section>
       ))
     }
-    <p class="qn__empty" hidden>일치하는 항목이 없습니다.</p>
+    <p class="qn__empty" role="status"></p>
   </div>
   <p class="qn__keys mono" aria-hidden="true">↑↓ 이동 · Enter 열기 · Esc 닫기</p>
 </dialog>
@@ -81,7 +81,8 @@ const groups: { title: string; items: Item[] }[] = [
     const q = filter.value.trim().toLowerCase();
     for (const a of items) a.closest('li')!.hidden = !!q && !a.textContent!.toLowerCase().includes(q);
     for (const g of dialog.querySelectorAll<HTMLElement>('.qn__group')) g.hidden = !g.querySelector('li:not([hidden])');
-    empty.hidden = visible().length > 0;
+    // A live region that stays in the page, so screen readers announce the text when it appears.
+    empty.textContent = visible().length ? '' : '일치하는 항목이 없습니다.';
   }
 
   filter.addEventListener('input', applyFilter);
@@ -89,15 +90,16 @@ const groups: { title: string; items: Item[] }[] = [
   dialog.addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'Enter') return;
     const list = visible();
-    if (!list.length) return;
-    const i = list.indexOf(document.activeElement as HTMLAnchorElement);
     if (e.key === 'Enter') {
+      // Never let Enter submit the dialog form: with no match the menu stays open to fix the query.
       if (document.activeElement === filter) {
         e.preventDefault();
-        list[0].click();
+        list[0]?.click();
       }
       return;
     }
+    if (!list.length) return;
+    const i = list.indexOf(document.activeElement as HTMLAnchorElement);
     e.preventDefault();
     const next = e.key === 'ArrowDown' ? (i + 1) % list.length : i <= 0 ? list.length - 1 : i - 1;
     list[next].focus();
@@ -229,6 +231,10 @@ const groups: { title: string; items: Item[] }[] = [
   .qn__empty {
     padding: 20px 10px;
     color: var(--dim);
+  }
+
+  .qn__empty:empty {
+    padding: 0;
   }
 
   .qn__keys {
