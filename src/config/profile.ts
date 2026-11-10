@@ -8,7 +8,7 @@ export const profile = {
   siteUrl: `https://${githubUser.toLowerCase()}.github.io`,
   repoUrl: `https://github.com/${githubUser}/${githubUser.toLowerCase()}.github.io`,
 
-  intro: 'BeepLabX의 개발 포트폴리오. 웹 앱과 브라우저 게임, Windows 도구를 만듭니다.',
+  intro: 'BeepLabX 포트폴리오. Web, Apps, Games.',
 } as const;
 
 export const githubUrl = `https://github.com/${profile.githubUser}`;

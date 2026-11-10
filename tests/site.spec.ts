@@ -262,7 +262,7 @@ test('quick navigation stays open on Enter when nothing matches', async ({ page 
   await page.getByRole('button', { name: '메뉴', exact: true }).click();
   const filter = page.locator('#qn-filter');
   await filter.fill('zzzq');
-  await expect(page.getByRole('status')).toHaveText('일치하는 항목이 없습니다.');
+  await expect(page.getByRole('status')).toHaveText('결과 없음');
   await page.keyboard.press('Enter');
   await expect(page.locator('[data-quicknav]')).toBeVisible();
   await expect(filter).toBeFocused();

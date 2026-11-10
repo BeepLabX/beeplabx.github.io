@@ -6,12 +6,12 @@ const works = (await getCollection('works')).sort((a, b) => a.data.order - b.dat
 
 <section id="intro" class="hero snap-panel" aria-labelledby="hero-title">
   <div class="wrap hero__inner">
-    <div class="hero__top label"><span>PORTFOLIO</span><span class="hero__hint">이름을 눌러 보세요</span><span>WEB / GAMES / WINDOWS</span></div>
+    <div class="hero__top label"><span>PORTFOLIO</span><span class="hero__hint">이름 눌러 보기</span><span>{String(works.length).padStart(2, '0')} WORKS</span></div>
     <div class="hero__grid">
       <div class="hero__copy">
         <h1 id="hero-title">{profile.brand}<span aria-hidden="true">.</span></h1>
         <div class="hero__lede">
-          <h2>웹 앱과 게임,<br />Windows 도구를 만듭니다.</h2>
+          <h2>Web, Apps, Games</h2>
           <p class="hero__intro">{works.map(w => w.data.title).join(' · ')}</p>
           <div class="hero__links">
             <a class="hero__cta" href="#works" data-magnet>프로젝트 보기 <span aria-hidden="true">↘</span></a>
@@ -23,7 +23,7 @@ const works = (await getCollection('works')).sort((a, b) => a.data.order - b.dat
         <img src="/brand-hero.webp" width="512" height="512" alt="BeepLabX BX 로고" fetchpriority="high" />
       </div>
     </div>
-    <div class="hero__bottom mono"><span>{String(works.length).padStart(2, '0')} WORKS</span><a href="#works">SCROLL <span aria-hidden="true">↓</span></a></div>
+    <div class="hero__bottom mono"><span>{profile.brand}</span><a href="#works">SCROLL <span aria-hidden="true">↓</span></a></div>
   </div>
 </section>
 

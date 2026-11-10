@@ -1,6 +1,6 @@
 # BeepLabX
 
-웹 앱과 브라우저 게임, Windows 도구를 만듭니다.
+Web, Apps, Games.
 
 [Portfolio](https://beeplabx.github.io) · [GitHub](https://github.com/BeepLabX)
 
