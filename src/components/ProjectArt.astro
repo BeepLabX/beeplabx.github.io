@@ -1,10 +1,11 @@
 ---
 // `name` pairs this artwork with the same project's artwork on the next page (view transition).
-interface Props { effect: 'squish' | 'lamp' | 'none'; name?: string; }
-const { effect, name } = Astro.props;
+interface Props { effect: 'squish' | 'lamp' | 'hoard' | 'freshet' | 'none'; title?: string; name?: string; }
+const { effect, title, name } = Astro.props;
+const label = { squish: 'Totillu 캐릭터 아트워크', lamp: 'Lamplighter 등불 아트워크', hoard: '용의 보물창고 게임 화면', freshet: 'Freshet 아이콘', none: `${title ?? '프로젝트'} 아트워크` }[effect];
 ---
 
-<figure class:list={['project-art', `project-art--${effect}`]} data-tilt style={name && `view-transition-name:${name}`} aria-label={effect === 'squish' ? 'Totillu 캐릭터 아트워크' : effect === 'lamp' ? 'Lamplighter 등불 아트워크' : '프로젝트 아트워크'}>
+<figure class:list={['project-art', `project-art--${effect}`]} data-tilt style={name && `view-transition-name:${name}`} aria-label={label}>
   {effect === 'squish' ? (
     <>
       <span class="art__word" aria-hidden="true">totillu</span>
@@ -32,6 +33,31 @@ const { effect, name } = Astro.props;
       <img class="art__logo" src="/lamplighter/title-logo.webp" width="640" height="266" alt="" loading="lazy" decoding="async" />
       <figcaption><span>BROWSER GAME</span><span>비춰 보기</span></figcaption>
     </>
+  ) : effect === 'hoard' ? (
+    <>
+      <!-- A frame captured from the running game, stage 1. -->
+      <img class="art__shot" src="/dtd/battle.webp" width="712" height="612" alt="" loading="lazy" decoding="async" />
+      <figcaption><span>TOWER DEFENSE</span><span>STAGE 1</span></figcaption>
+    </>
+  ) : effect === 'freshet' ? (
+    <>
+      <!-- Freshet's app icon (same geometry as the app's BrandMark.xaml), on water that keeps flowing. -->
+      <svg class="art__flow" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 60 Q50 20 100 60 T200 60 T300 60 T400 60 T500 60 T600 60 T700 60 T800 60 T900 60 T1000 60 T1100 60 T1200 60" />
+        <path d="M0 110 Q50 70 100 110 T200 110 T300 110 T400 110 T500 110 T600 110 T700 110 T800 110 T900 110 T1000 110 T1100 110 T1200 110" />
+        <path d="M0 160 Q50 120 100 160 T200 160 T300 160 T400 160 T500 160 T600 160 T700 160 T800 160 T900 160 T1000 160 T1100 160 T1200 160" />
+      </svg>
+      <svg class="art__mark" viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="freshet-fill" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#2fb8e8" /><stop offset="1" stop-color="#1d5fe0" /></linearGradient></defs>
+        <path fill="url(#freshet-fill)" d="M16 74a58 58 0 0 1 58-58h108a58 58 0 0 1 58 58v108a58 58 0 0 1-58 58H74a58 58 0 0 1-58-58z" />
+        <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+          <path class="art__arrow" stroke-width="20" d="M128 56v82M94 90l34-34 34 34" />
+          <path stroke-width="20" d="M52 176c28-24 52-24 76-4s48 20 76-4" />
+          <path stroke-width="14" stroke-opacity=".6" d="M70 212c24-18 42-18 58-4 18 14 36 14 58-2" />
+        </g>
+      </svg>
+      <figcaption><span>WINDOWS APP</span><span>winget</span></figcaption>
+    </>
   ) : <figcaption>PROJECT</figcaption>}
 </figure>
 
@@ -50,7 +76,18 @@ const { effect, name } = Astro.props;
   .art__touch img { width: 100%; pointer-events: none; filter: drop-shadow(0 22px 16px rgb(74 45 76 / .12)); transform-origin: 50% 90%; animation: breathe 3.2s ease-in-out infinite; }
   .art__touch:hover img { animation-duration: 1.1s; }
   .art__touch:global(.is-pressed) { transform: scale(1.12, .78); transition-duration: .15s; }
-  figcaption { position: absolute; inset: auto 24px 20px; display: flex; justify-content: space-between; gap: 12px; font-family: var(--f-mono); font-size: .55rem; letter-spacing: .06em; }
+  figcaption { position: absolute; inset: auto 24px 20px; z-index: 2; display: flex; justify-content: space-between; gap: 12px; font-family: var(--f-mono); font-size: .64rem; letter-spacing: .06em; }
+  .project-art--hoard { background: #5fae3c; color: #fff; }
+  .project-art--hoard figcaption { text-shadow: 0 1px 3px rgb(0 0 0 / .7); }
+  .project-art--hoard::before { content: ''; position: absolute; inset: 60% 0 0; z-index: 1; background: linear-gradient(transparent, rgb(8 20 6 / .7)); pointer-events: none; }
+  .art__shot { position: absolute; inset: -4%; width: 108%; height: 108%; max-width: none; object-fit: cover; object-position: 50% 62%; translate: calc((var(--gx) - 50%) * -.05) calc((var(--gy) - 45%) * -.04); }
+  .project-art--freshet { background: radial-gradient(circle at 50% 38%, #1d3158, #121824 72%); color: #9fb6dc; }
+  .art__flow { position: absolute; inset: auto 0 0 -25%; width: 150%; height: 46%; fill: none; stroke: #3b8ff0; stroke-width: 2; opacity: .4; overflow: visible; }
+  .art__flow path { animation: flow 9s linear infinite; }
+  .art__flow path:nth-child(2) { animation-duration: 13s; opacity: .7; }
+  .art__flow path:nth-child(3) { animation-duration: 17s; opacity: .45; }
+  .art__mark { position: absolute; left: 50%; top: 44%; width: 38%; translate: calc(-50% + (var(--gx) - 50%) * .1) calc(-50% + (var(--gy) - 45%) * .08); filter: drop-shadow(0 24px 30px rgb(8 20 60 / .6)); }
+  .art__arrow { animation: lift 2.8s ease-in-out infinite; }
   .project-art--lamp { background: #0c1018; color: #d2b88f; cursor: crosshair; }
   /* Parallax: --gx/--gy (pointer or tap, set by page-motion) move each layer by a different amount. */
   .art__street { position: absolute; inset: -4%; width: 108%; height: 108%; max-width: none; object-fit: cover; object-position: 18% 50%; translate: calc((var(--gx) - 50%) * -.05) calc((var(--gy) - 45%) * -.03); filter: brightness(.8); }
@@ -110,6 +147,8 @@ const { effect, name } = Astro.props;
   @keyframes recolor { to { filter: drop-shadow(0 22px 16px rgb(74 45 76 / .12)) hue-rotate(360deg); } }
   @keyframes heart { 0% { opacity: 0; transform: none; } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -180%) rotate(16deg) scale(1.3); } }
   @keyframes flash { from { opacity: .85; } to { opacity: 0; } }
+  @keyframes flow { to { transform: translateX(-200px); } }
+  @keyframes lift { 50% { transform: translateY(-9px); } }
   @keyframes breathe { 50% { scale: 1.03 .97; } }
   @keyframes keeper { 50% { scale: 1 1.012; rotate: -.4deg; } }
   @keyframes flame { 0%, 100% { opacity: 1; scale: 1; } 37% { opacity: .8; scale: .92; } 41% { opacity: 1; scale: 1.06; } 73% { opacity: .88; scale: .97; } }
@@ -118,7 +157,8 @@ const { effect, name } = Astro.props;
     .project-art { aspect-ratio: 1.6; }
     .art__word { font-size: 3.8rem; }
     .art__character { inset: 21% 22% 13%; }
-    figcaption { inset-inline: 16px; bottom: 14px; font-size: .5rem; }
+    figcaption { inset-inline: 16px; bottom: 14px; font-size: .58rem; }
+    .art__mark { width: 27%; top: 42%; }
     .art__keeper { height: 94%; left: 6%; }
     .art__logo { width: 44%; top: 8%; }
     .art__lamps i { top: 74%; width: 8%; }

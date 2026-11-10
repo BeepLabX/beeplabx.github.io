@@ -23,7 +23,7 @@ const chapters = [{ href: '#intro', label: 'Intro' }, ...works.map(w => ({ href:
   .rail { position: fixed; right: clamp(4px, 1.6vw, 24px); top: 50%; translate: 0 -50%; z-index: 15; display: grid; }
   .rail a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; min-width: 44px; min-height: 36px; color: var(--dim); text-decoration: none; transition: color .3s; }
   .rail__label { padding: 2px 8px; border-radius: 4px; background: rgb(9 12 18 / .75); font-family: var(--f-display); font-size: .75rem; white-space: nowrap; opacity: 0; translate: 8px 0; transition: opacity .3s, translate .3s; }
-  .rail__num { font-size: .6rem; }
+  .rail__num { font-size: .66rem; }
   .rail__tick { width: 12px; height: 1px; background: currentColor; transition: width .6s var(--spring), background-color .3s; }
   .rail:hover .rail__label, .rail a:focus-visible .rail__label { opacity: 1; translate: none; }
   .rail a:hover, .rail a[aria-current='true'] { color: var(--paper); }

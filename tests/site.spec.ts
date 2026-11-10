@@ -3,6 +3,8 @@ import { test, expect, type Page } from '@playwright/test';
 const WORKS = [
   { slug: 'totillu', title: 'Totillu', url: 'https://totillu.beeplab.workers.dev/' },
   { slug: 'lamplighter', title: 'Lamplighter', url: 'https://lamp.beeplab.workers.dev/' },
+  { slug: 'dtd', title: '용의 보물창고', url: 'https://dtd.beeplab.workers.dev/' },
+  { slug: 'freshet', title: 'Freshet', url: 'https://github.com/BeepLabX/Freshet/releases/latest' },
 ];
 
 function collectErrors(page: Page) {
@@ -33,13 +35,13 @@ test('home contains the current brand and only selected works', async ({ page })
   await expect(page.locator('h1')).toHaveText('BeepLabX.');
   await expect(page.locator('#works h2')).toContainText('Selected Works');
   await expect(page.locator('#lab, #notes, #about')).toHaveCount(0);
-  await expect(page.locator('[data-work]')).toHaveCount(2);
+  await expect(page.locator('[data-work]')).toHaveCount(WORKS.length);
   for (const work of WORKS) {
     await expect(page.locator(`#works a[href="/works/${work.slug}/"]`)).toHaveCount(1);
     await expect(page.locator(`#works a[href="${work.url}"]`)).toHaveAttribute('target', '_blank');
   }
   await page.evaluate(() => document.fonts.ready);
-  expect(await page.evaluate(async () => (await document.fonts.load('500 18px "Pretendard Variable"', '웹을 만들고 게임을 만듭니다')).length)).toBeGreaterThan(0);
+  expect(await page.evaluate(async () => (await document.fonts.load('500 18px "Pretendard Variable"', '웹 앱과 게임, Windows 도구를 만듭니다')).length)).toBeGreaterThan(0);
   await expect(page.locator('.brand img')).toHaveAttribute('src', '/brand.png');
   await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', '/favicon-32.png');
   for (const path of ['/brand.png', '/favicon-32.png', '/favicon-192.png', '/apple-touch-icon.png', '/og.png']) {
@@ -297,7 +299,6 @@ for (const work of WORKS) {
     await expect(page.locator('h1')).toHaveText(work.title);
     await expect(page.locator(`a[href="${work.url}"]`).first()).toBeVisible();
     await expect(page.locator('.detail__media .project-art')).toBeVisible();
-    await expect(page.locator('.detail__caption')).toContainText('프로젝트 아트워크');
     await expect(page.locator('.detail__media img[src*=".jpg"]')).toHaveCount(0);
     await expect(page.locator('html')).toHaveCSS('scroll-snap-type', 'none');
     await page.reload();

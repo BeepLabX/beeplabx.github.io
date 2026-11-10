@@ -1,16 +1,18 @@
 ---
+import { getCollection } from 'astro:content';
 import { profile, githubUrl } from '../config/profile';
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <section id="intro" class="hero snap-panel" aria-labelledby="hero-title">
   <div class="wrap hero__inner">
-    <div class="hero__top label"><span>DEVELOPER PORTFOLIO</span><span class="hero__hint">이름을 눌러 보세요</span><span>WEB APPS / GAMES</span></div>
+    <div class="hero__top label"><span>PORTFOLIO</span><span class="hero__hint">이름을 눌러 보세요</span><span>WEB / GAMES / WINDOWS</span></div>
     <div class="hero__grid">
       <div class="hero__copy">
         <h1 id="hero-title">{profile.brand}<span aria-hidden="true">.</span></h1>
         <div class="hero__lede">
-          <h2>웹을 만들고,<br />게임을 만듭니다.</h2>
-          <p class="hero__intro">캐릭터를 만드는 Totillu부터<br />빛을 다루는 게임 Lamplighter까지.</p>
+          <h2>웹 앱과 게임,<br />Windows 도구를 만듭니다.</h2>
+          <p class="hero__intro">{works.map(w => w.data.title).join(' · ')}</p>
           <div class="hero__links">
             <a class="hero__cta" href="#works" data-magnet>프로젝트 보기 <span aria-hidden="true">↘</span></a>
             <a href={githubUrl} target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span><span class="sr-only"> (새 탭)</span></a>
@@ -21,7 +23,7 @@ import { profile, githubUrl } from '../config/profile';
         <img src="/brand-hero.webp" width="512" height="512" alt="BeepLabX BX 로고" fetchpriority="high" />
       </div>
     </div>
-    <div class="hero__bottom mono"><span>BeepLabX / Selected projects</span><a href="#works">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a></div>
+    <div class="hero__bottom mono"><span>{String(works.length).padStart(2, '0')} WORKS</span><a href="#works">SCROLL <span aria-hidden="true">↓</span></a></div>
   </div>
 </section>
 
@@ -29,7 +31,7 @@ import { profile, githubUrl } from '../config/profile';
   .hero { position: relative; isolation: isolate; min-height: calc(100svh - var(--footer-h)); padding-top: var(--header-h); background: radial-gradient(ellipse 70% 60% at 30% 40%, rgb(125 171 255 / .07), transparent 70%), var(--ink); }
   .hero__inner { min-height: calc(100svh - var(--header-h) - var(--footer-h)); display: flex; flex-direction: column; padding-block: 32px; }
   .hero__top, .hero__bottom { display: flex; justify-content: space-between; gap: 20px; }
-  .hero__top { font-size: .65rem; letter-spacing: .12em; }
+  .hero__top { font-size: .72rem; letter-spacing: .12em; }
   .hero__hint { display: none; }
   :global(.fx) .hero__hint { display: inline; color: var(--lamp); animation: blink 2.4s 2s ease-in-out infinite; }
   .hero__grid { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 24px; flex: 1; padding-block: 40px; }
@@ -52,7 +54,7 @@ import { profile, githubUrl } from '../config/profile';
   .hero__links a:hover { color: var(--lamp); }
   .hero__art { position: relative; }
   .hero__art img { width: 100%; max-width: 480px; margin-inline: auto; animation: float 7s ease-in-out infinite; }
-  .hero__bottom { padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: .65rem; }
+  .hero__bottom { padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: .7rem; }
   .hero__bottom a { text-decoration: none; min-height: 32px; }
   .hero__bottom a span { display: inline-block; animation: nudge 1.8s ease-in-out infinite; }
 
@@ -83,7 +85,7 @@ import { profile, githubUrl } from '../config/profile';
     .hero__intro { margin-top: 16px; font-size: .9rem; }
     .hero__links { margin-top: 20px; }
     .hero__art { width: min(52vw, 240px); justify-self: end; }
-    .hero__bottom { font-size: .55rem; align-items: center; }
+    .hero__bottom { font-size: .64rem; align-items: center; }
   }
   /* Laptop heights (≈720–860px) too: otherwise the bottom link slides under the fixed footer. */
   @media (max-height: 860px) and (min-width: 761px) {

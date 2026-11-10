@@ -1,6 +1,6 @@
 # BeepLabX
 
-웹 앱과 브라우저 게임을 만드는 개발자입니다.
+웹 앱과 브라우저 게임, Windows 도구를 만듭니다.
 
 [Portfolio](https://beeplabx.github.io) · [GitHub](https://github.com/BeepLabX)
 
@@ -8,8 +8,10 @@
 
 | 프로젝트 | 소개 | 링크 |
 | --- | --- | --- |
-| **Totillu** | 모양·색·표정을 편집하고, 터치에 반응하는 캐릭터를 만드는 웹 앱 | [사용해 보기](https://totillu.beeplab.workers.dev/) |
-| **Lamplighter** | 빛을 모아 거리의 등불을 밝히는 브라우저 액션 게임 | [플레이](https://lamp.beeplab.workers.dev/) |
+| **Totillu** | 모양·색·표정을 골라 캐릭터를 만드는 웹 앱 | [열기](https://totillu.beeplab.workers.dev/) |
+| **Lamplighter** | 빛을 모아 거리의 등불을 켜는 브라우저 게임 | [플레이](https://lamp.beeplab.workers.dev/) |
+| **용의 보물창고** | 아기 용이 보물 더미를 지키는 3D 타워 디펜스 | [플레이](https://dtd.beeplab.workers.dev/) |
+| **Freshet** | winget으로 Windows 앱을 골라 업데이트하는 포터블 앱 | [ZIP 받기](https://github.com/BeepLabX/Freshet/releases/latest) |
 
 ## About this site
 

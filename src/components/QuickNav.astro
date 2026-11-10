@@ -17,7 +17,7 @@ const groups: { title: string; items: Item[] }[] = [
     title: '작업',
     items: works.flatMap((w) => [
       { label: w.data.title, meta: '상세', href: `/works/${w.id}/` },
-      { label: `${w.data.title} 열기`, meta: '새 탭', href: w.data.url, external: true },
+      { label: `${w.data.title} ${w.data.download ? '받기' : '열기'}`, meta: w.data.download ? 'ZIP' : '새 탭', href: w.data.url, external: true },
     ]),
   },
   {
@@ -32,7 +32,7 @@ const groups: { title: string; items: Item[] }[] = [
 <dialog class="qn" aria-label="빠른 이동" data-quicknav>
   <form method="dialog" class="qn__top">
     <label class="sr-only" for="qn-filter">이동할 곳 검색</label>
-    <input id="qn-filter" class="qn__filter" type="search" placeholder="어디로 갈까요?" autocomplete="off" spellcheck="false" />
+    <input id="qn-filter" class="qn__filter" type="search" placeholder="검색" autocomplete="off" spellcheck="false" />
     <button class="qn__close" type="submit" aria-label="닫기">Esc</button>
   </form>
   <div class="qn__list">
